@@ -12,9 +12,9 @@ class Availability extends Model
 
     protected $fillable = [
         'user_id',
-        'date',
-        'start_time',
-        'end_time',
+        'type',
+        'days',
+        'time'
     ];
 
     // Define the relationship to the Coach model

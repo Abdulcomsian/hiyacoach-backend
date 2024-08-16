@@ -16,6 +16,7 @@ class OfferingController extends Controller
         try {
             $this->validate($request, [
                 'category_id' => 'required|exists:categories,id',
+                'style' => 'required|in:online,in_person,both',
                 'price' => 'required|numeric',
             ]);
 
@@ -25,12 +26,14 @@ class OfferingController extends Controller
             if ($offeringId) {
                 $coachOffering = CoachOffering::findOrFail($offeringId);
                 $coachOffering->category_id = $request->category_id;
+                $coachOffering->style = $request->style;
                 $coachOffering->price = $request->input("price");
                 $coachOffering->update();
             } else {
                 $coachOffering = new CoachOffering();
                 $coachOffering->user_id = $user->id;
                 $coachOffering->category_id = $request->category_id;
+                $coachOffering->style = $request->style;
                 $coachOffering->price = $request->input("price");
                 $coachOffering->save();
             }

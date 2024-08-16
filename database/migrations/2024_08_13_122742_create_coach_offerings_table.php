@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('category_id');
-            $table->decimal('price', 10, 2);
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+            $table->enum('style', ['online','in_person','both'])->default('online');
+            $table->decimal('price', 10, 2);
             $table->timestamps();
         });
     }

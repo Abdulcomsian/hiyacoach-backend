@@ -15,11 +15,17 @@ class CoachOffering extends Model
     protected $fillable = [
         'user_id',
         'category_id',
+        'style',
         'price'
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->hasOne(Category::class, 'id','category_id');
     }
 }

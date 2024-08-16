@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('availabilities', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->date('date');
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->enum('type', ['daily', 'monday_to_friday', 'custom']);
+            $table->json('days')->nullable();
+            $table->time('time');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

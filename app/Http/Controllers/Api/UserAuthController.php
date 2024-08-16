@@ -21,6 +21,7 @@ class UserAuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'phone_no' => 'required|string|max:15',
             'dob' => 'required|date',
+            'gender' => 'required|in:male,female,other',
             'password' => 'required|string|min:8',
             'referral_code' => 'nullable|string|exists:users,referral_code',
         ]);
@@ -35,6 +36,7 @@ class UserAuthController extends Controller
             'email' => $request->email,
             'phone_no' => $request->phone_no,
             'dob' => $request->dob,
+            'gender' => $request->gender,
             'password' => Hash::make($request->password),
         ]);
         if($usertype == 'user'){

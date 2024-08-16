@@ -5,8 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\SocialiteController;
+use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Coach\BankController;
 use App\Http\Controllers\Api\Coach\PostController;
+use App\Http\Controllers\Api\Coach\MediaController;
+use App\Http\Controllers\Api\User\ReviewController;
 use App\Http\Controllers\Api\Coach\FollowController;
 use App\Http\Controllers\Api\Coach\LocationController;
 use App\Http\Controllers\Api\Coach\OfferingController;
@@ -15,7 +18,6 @@ use App\Http\Controllers\Api\PostInteractionController;
 use App\Http\Controllers\Api\Coach\CertificateController;
 use App\Http\Controllers\Api\Coach\AvailabilityController;
 use App\Http\Controllers\Auth\EmailVerificationController;
-use App\Http\Controllers\Api\Coach\CoachingStyleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,9 +69,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Bank Details
     Route::post('store-bank/{bankId?}', [BankController::class, 'storeOrUpdateBank']);
 
-    // Coaching Style
-    Route::post('store-style/{styleId?}', [CoachingStyleController::class, 'storeOrUpdateStyle']);
-
     // Post
     Route::post('/posts', [PostController::class, 'store']);
     Route::get('/posts', [PostController::class, 'index']);
@@ -89,19 +88,37 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('certificates/{certificateId?}', [CertificateController::class, 'view']);
 
     // Availability
-    // Route::prefix('coaches')->group(function () {
-    //     Route::get('/availabilities', [AvailabilityController::class, 'index']);
-    //     Route::post('/availabilities', [AvailabilityController::class, 'store']);
-    // });
+    Route::prefix('coaches')->group(function () {
+        Route::get('/availabilities', [AvailabilityController::class, 'index']);
+        Route::post('/availabilities', [AvailabilityController::class, 'store']);
+    });
 
-    // Route::prefix('availabilities')->group(function () {
-    //     Route::get('{id}', [AvailabilityController::class, 'show']);
-    //     Route::put('{availability}', [AvailabilityController::class, 'update']);
-    //     Route::delete('{availability}', [AvailabilityController::class, 'destroy']);
-    // });
+    Route::prefix('availabilities')->group(function () {
+        Route::get('{id}', [AvailabilityController::class, 'show']);
+        Route::put('{availability}', [AvailabilityController::class, 'update']);
+        Route::delete('{availability}', [AvailabilityController::class, 'destroy']);
+    });
 
     // Follow Unfollow
     Route::post('/follow/{userId}', [FollowController::class, 'follow']);
     Route::post('/unfollow/{userId}', [FollowController::class, 'unfollow']);
     Route::get('/is-following/{userId}', [FollowController::class, 'isFollowing']);
+
+    // Media
+    Route::post('/media', [MediaController::class, 'store']);
+    Route::get('/media', [MediaController::class, 'index']);
+    Route::get('/media/{media}', [MediaController::class, 'show']);
+    Route::post('/update-media/{media}', [MediaController::class, 'update']);
+    Route::delete('/media/{media}', [MediaController::class, 'destroy']);
+
+
+    ///// User /////
+    Route::get('coaches', [UserController::class, 'allCoaches']);
+
+    Route::post('coaches/{coach}/reviews', [ReviewController::class, 'store']);
+    Route::post('reviews/{review}', [ReviewController::class, 'update']);
+    Route::delete('reviews/{review}', [ReviewController::class, 'destroy']);
+
+    Route::get('/coaches/filter', [UserController::class, 'filterCoaches']);
+    Route::get('coach/{coachId}/{type}', [UserController::class, 'coachGallery']);
 });

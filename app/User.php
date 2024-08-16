@@ -3,11 +3,13 @@
 namespace App;
 
 use App\Models\Like;
+use App\Models\Post;
+use App\Models\Review;
 use App\Models\Comment;
 use App\Models\Favorite;
 use Illuminate\Support\Str;
 use App\Models\CoachLocation;
-use App\Models\Post;
+use App\Models\CoachOffering;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -127,5 +129,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function unfollow($userId)
     {
         $this->following()->detach($userId);
+    }
+
+    public function offerings()
+    {
+        return $this->hasOne(CoachOffering::class, 'user_id', 'id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'user_id');
+    }
+
+    // Reviews the user has written
+    public function writtenReviews()
+    {
+        return $this->hasMany(Review::class, 'reviewer_id');
     }
 }

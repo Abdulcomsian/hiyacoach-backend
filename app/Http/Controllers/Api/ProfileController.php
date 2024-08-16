@@ -24,11 +24,12 @@ class ProfileController extends Controller
                         return url($image);
                     }, $post->images);
                 });
-
-                $user->posts_count = $user->posts()->count();
-                $user->followers_count = $user->followers()->count();
-                $user->following_count = $user->following()->count();
             }
+
+            $user->posts_count = $user->posts()->count();
+            $user->followers_count = $user->followers()->count();
+            $user->following_count = $user->following()->count();
+            $user->likes = $user->likes()->count();
 
             $user->profile_picture = $user->profile_picture ? url($user->profile_picture) : null;
 
@@ -55,6 +56,7 @@ class ProfileController extends Controller
                 'email' => 'sometimes|required|string|email|max:255|unique:users',
                 'phone_no' => 'sometimes|required|string|max:15',
                 'dob' => 'sometimes|required|date',
+                'gender' => 'required|in:male,female,other',
                 'password' => 'sometimes|required|string|min:8',
                 'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             ]);
@@ -71,6 +73,7 @@ class ProfileController extends Controller
             $user->name = $request->input('name') ?? $user->name;
             $user->phone_no = $request->input('phone_no') ?? $user->phone_no;
             $user->dob = $request->input('dob') ?? $user->dob;
+            $user->gender = $request->input('gender') ?? $user->gender;
 
             if ($request->filled('password')) {
                 $user->password = Hash::make($request->input('password'));
