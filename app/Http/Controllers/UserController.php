@@ -2,26 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 class UserController extends Controller
 {
     public function index()
     {
         try {
-            //Related to transactions
             $transactions_today = 0;
             $transactions_weekly = 0;
             $transactions_monthly = 0;
             $transactions_yearly = 0;
 
-            //Related to users
             $users_today = 0;
             $users_weekly = 0;
             $users_monthly = 0;
             $users_yearly = 0;
 
-            //Companies
             $total_companies = 0;
             $total_users = 0;
             $total_packages = 0;
@@ -42,8 +37,7 @@ class UserController extends Controller
                 'total_transactions'
 
             ));
-        } catch (\Exception $exception) {
-            toastr()->error('Something went wrong, try again');
+        } catch (\Exception $e) {
             return back();
         }
     }

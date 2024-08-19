@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use App\Models\FAQ;
 use App\Models\Category;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\CategoryRequest;
 
@@ -45,8 +47,7 @@ class AdminController extends Controller
                 'total_transactions'
 
             ));
-        } catch (\Exception $exception) {
-            toastr()->error('Something went wrong, try again');
+        } catch (Exception $exception) {
             return back();
         }
     }
@@ -96,6 +97,45 @@ class AdminController extends Controller
         } catch (Exception $e) {
             Log::error($e->getMessage());
             return redirect()->route('categories')->with('error', 'Something went wrong.');
+        }
+    }
+
+    public function ListFaqs()
+    {
+        $faqs = FAQ::latest()->get();
+        return view('admin.faq.index', compact('faqs'));
+    }
+
+    public function saveFaq(Request $request, $faqId = NULL)
+    {
+        try {
+            $validateData = $request->validate([
+                'question' => 'required|string|max:255',
+                'answer' => 'required|string',
+            ]);
+
+            if ($faqId) {
+                $faq = FAQ::findOrFail($faqId);
+                $faq->update($validateData);
+                $message = 'FAQ updated successfully!';
+            } else {
+                $faq = FAQ::create($validateData);
+                $message = 'FAQ created successfully!';
+            }
+            return back()->with('success', $message);
+        } catch (Exception $e) {
+            return back()->with('error', 'Something Went Wrong!');
+        }
+    }
+
+    public function destroyFaq($id)
+    {
+        try {
+            FAQ::findOrFail($id)->delete();
+            return back()->with('success', 'FAQ deleted successfully!');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()->with('error', 'Something Went Wrong!');
         }
     }
 }

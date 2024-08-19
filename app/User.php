@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Availability;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Review;
@@ -15,6 +16,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -133,7 +135,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function offerings()
     {
-        return $this->hasOne(CoachOffering::class, 'user_id', 'id');
+        return $this->hasMany(CoachOffering::class, 'user_id', 'id');
+    }
+
+    public function availabilities()
+    {
+        return $this->hasMany(Availability::class, 'user_id', 'id');
     }
 
     public function reviews()

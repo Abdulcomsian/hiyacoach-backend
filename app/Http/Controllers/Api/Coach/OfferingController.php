@@ -30,6 +30,17 @@ class OfferingController extends Controller
                 $coachOffering->price = $request->input("price");
                 $coachOffering->update();
             } else {
+                $existingOffering = CoachOffering::where('user_id', $userId)
+                    ->where('category_id', $request->category_id)
+                    ->first();
+
+                if ($existingOffering) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Offering already exists in this category.',
+                    ], 400);
+                }
+
                 $coachOffering = new CoachOffering();
                 $coachOffering->user_id = $user->id;
                 $coachOffering->category_id = $request->category_id;

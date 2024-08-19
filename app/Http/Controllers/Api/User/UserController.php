@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api\User;
 
 use App\User;
 use Exception;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -34,6 +37,25 @@ class UserController extends Controller
                 'status' => 'error',
                 'message' => $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function genderCount()
+    {
+        try {
+            $maleCoachCount = User::role('coach')->where('gender', 'male')->count();
+            $femaleCoachCount = User::role('coach')->where('gender', 'female')->count();
+            $otherCoachCount = User::role('coach')->where('gender', 'other')->count();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => [
+                    $maleCoachCount,
+                    $femaleCoachCount,
+                    $otherCoachCount,
+                ],
+            ], 200);
+        } catch (Exception $e) {
         }
     }
 
@@ -115,6 +137,61 @@ class UserController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function savedPosts()
+    {
+        try {
+            $savedPosts = Favorite::where('user_id', auth()->user()->id)->with('post')->get();
+
+            $savedPosts->each(function ($favorite) {
+                $post = $favorite->post;
+                if ($post) {
+                    $post->images = json_decode($post->images, true);
+                    if (is_array($post->images)) {
+                        $post->images = array_map(fn($image) => url($image), $post->images);
+                    }
+                }
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $savedPosts,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    public function deleteAccount(Request $request)
+    {
+        try {
+            $userId = Auth::user()->id;
+            $user = User::find($userId);
+
+            DB::transaction(function () use ($user) {
+                $user->posts()->delete();
+                $user->reviews()->delete();
+                $user->likes()->delete();
+                $user->favorites()->delete();
+                $user->delete();
+            });
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Your account has been successfully deleted.',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to delete your account. Please try again.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

@@ -2,15 +2,18 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\UserAuthController;
 use App\Http\Controllers\Api\SocialiteController;
 use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Coach\BankController;
 use App\Http\Controllers\Api\Coach\PostController;
+use App\Http\Controllers\Api\User\EmailController;
 use App\Http\Controllers\Api\Coach\MediaController;
 use App\Http\Controllers\Api\User\ReviewController;
 use App\Http\Controllers\Api\Coach\FollowController;
+use App\Http\Controllers\Api\User\TrainingController;
 use App\Http\Controllers\Api\Coach\LocationController;
 use App\Http\Controllers\Api\Coach\OfferingController;
 use App\Http\Controllers\Api\ForgotPasswordController;
@@ -115,10 +118,33 @@ Route::middleware('auth:sanctum')->group(function () {
     ///// User /////
     Route::get('coaches', [UserController::class, 'allCoaches']);
 
+    // Reviews
     Route::post('coaches/{coach}/reviews', [ReviewController::class, 'store']);
     Route::post('reviews/{review}', [ReviewController::class, 'update']);
     Route::delete('reviews/{review}', [ReviewController::class, 'destroy']);
 
+    // Filter Coaches
+    Route::get('gender-count', [UserController::class,'genderCount']);
     Route::get('/coaches/filter', [UserController::class, 'filterCoaches']);
     Route::get('coach/{coachId}/{type}', [UserController::class, 'coachGallery']);
+
+    // Saved Posts
+    Route::get('saved-posts', [UserController::class, 'savedPosts']);
+
+    // Settings
+    Route::get('user/settings', [SettingsController::class, 'getSettings']);
+    Route::post('user/settings', [SettingsController::class, 'createOrUpdate']);
+
+    // Delete Account
+    Route::delete('user/delete-account', [UserController::class, 'deleteAccount']);
+
+    // Send Email
+    Route::post('send-email', [EmailController::class, 'sendEmail']);
+
+    // Book Training
+    Route::get('book-training/{coachId}', [TrainingController::class, 'getTraining']);
+    Route::post('book-training/{coachId}', [TrainingController::class, 'bookTraining']);
+    Route::get('upcoming-sessions', [TrainingController::class, 'getUpcomingSessions']);
+    Route::get('past-sessions', [TrainingController::class, 'getPastSessions']);
+
 });

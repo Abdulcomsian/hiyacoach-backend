@@ -21,6 +21,17 @@ class AvailabilityController extends Controller
 
         $days = $request->type === 'custom' ? $request->days : ($request->type === 'monday_to_friday' ? ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] : null);
 
+        $existingAvailability = Availability::where('user_id', Auth::id())
+                    ->where('type', $request->type)
+                    ->first();
+
+                if ($existingAvailability) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'Availability already exists in this type.',
+                    ], 400);
+                }
+
         $availability = Availability::create([
             'user_id' => Auth::id(),
             'type' => $request->type,
@@ -98,6 +109,7 @@ class AvailabilityController extends Controller
                     $availability->days = json_decode($availability->days, true);
                 }
             });
+
             return response()->json([
                 'status' => 'success',
                 'data' => $availabilities,
