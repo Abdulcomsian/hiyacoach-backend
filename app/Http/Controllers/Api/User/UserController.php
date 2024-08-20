@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\User;
 
 use App\User;
 use Exception;
+use App\Models\FAQ;
+use App\Models\Booking;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -192,6 +194,69 @@ class UserController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to delete your account. Please try again.',
                 'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function onlineCoachingHub()
+    {
+        try {
+            $bookings = Booking::where('user_id', Auth::id())
+                ->with('coach')
+                ->get();
+
+            $bookings->each(function ($booking) {
+                if ($booking->coach) {
+                    $booking->coach->profile_picture = url($booking->coach->profile_picture);
+                }
+            });
+
+            $coaches = $bookings->pluck('coach');
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $coaches,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function allFaqs()
+    {
+        try {
+            $faqs = FAQ::latest()->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $faqs,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function BookedSessions()
+    {
+        try {
+            $bookings = Booking::where('user_id', Auth::id())
+                ->with('offering.category')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $bookings,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
             ], 500);
         }
     }

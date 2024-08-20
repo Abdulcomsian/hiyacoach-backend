@@ -2,6 +2,8 @@
 
 namespace App\Http;
 
+use Commands\UpdateBookingStatus;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -65,4 +67,13 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
     ];
+
+    protected $commands = [
+        Commands\UpdateBookingStatus::class,
+    ];
+
+    protected function schedule(Schedule $schedule): void
+    {
+        $schedule->command('booking:update-status')->everyFifteenMinutes();
+    }
 }

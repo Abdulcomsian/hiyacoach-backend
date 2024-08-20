@@ -20,6 +20,10 @@ use App\Http\Controllers\Api\ForgotPasswordController;
 use App\Http\Controllers\Api\PostInteractionController;
 use App\Http\Controllers\Api\Coach\CertificateController;
 use App\Http\Controllers\Api\Coach\AvailabilityController;
+use App\Http\Controllers\Api\Coach\DietPlanController;
+use App\Http\Controllers\Api\Coach\TrainingPlanController;
+use App\Http\Controllers\Api\User\CheckInPhotosController;
+use App\Http\Controllers\Api\User\WeeklyReportController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 
 /*
@@ -114,6 +118,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-media/{media}', [MediaController::class, 'update']);
     Route::delete('/media/{media}', [MediaController::class, 'destroy']);
 
+    // Diet Plan
+    Route::post('/diet-plan/{userId}', [DietPlanController::class, 'store']);
+    Route::post('/update-diet-plan/{id}', [DietPlanController::class, 'update']);
+    Route::delete('/diet-plan/{id}', [DietPlanController::class, 'destroy']);
+
+    // Training Plan
+    Route::post('/training-plan/{userId}', [TrainingPlanController::class, 'store']);
+    Route::post('/update-training-plan/{id}', [TrainingPlanController::class, 'update']);
+    Route::delete('/training-plan/{id}', [TrainingPlanController::class, 'destroy']);
 
     ///// User /////
     Route::get('coaches', [UserController::class, 'allCoaches']);
@@ -145,6 +158,25 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('book-training/{coachId}', [TrainingController::class, 'getTraining']);
     Route::post('book-training/{coachId}', [TrainingController::class, 'bookTraining']);
     Route::get('upcoming-sessions', [TrainingController::class, 'getUpcomingSessions']);
+    Route::post('cancel-upcoming-session/{id}', [TrainingController::class, 'cancelUpcomingSessions']);
     Route::get('past-sessions', [TrainingController::class, 'getPastSessions']);
 
+    // Online Coaching Hub
+    Route::get('online-coaching-hub',[UserController::class, 'onlineCoachingHub']);
+
+    // FAQs
+    Route::get('faqs',[UserController::class, 'allFaqs']);
+
+    // Booked Sessions
+    Route::get('booked-sessions',[UserController::class, 'BookedSessions']);
+
+    // Check in photos
+    Route::post('/check-in-photos/{coachId}', [CheckInPhotosController::class, 'store']);
+    Route::post('/update-check-in-photos/{id}', [CheckInPhotosController::class, 'update']);
+    Route::delete('/check-in-photos/{id}', [CheckInPhotosController::class, 'destroy']);
+
+    // Weekly Report
+    Route::post('/weekly-report/{coachId}', [WeeklyReportController::class, 'store']);
+    Route::post('/update-weekly-report/{id}', [WeeklyReportController::class, 'update']);
+    Route::delete('/weekly-report/{id}', [WeeklyReportController::class, 'destroy']);
 });

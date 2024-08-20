@@ -99,6 +99,7 @@ class TrainingController extends Controller
             $userId = Auth::id();
 
             $upcomingSessions = Booking::where('user_id', $userId)
+                ->where('status', 'scheduled')
                 ->where('date', '>', now()->format('Y-m-d'))
                 ->orWhere(function ($query) {
                     $query->where('date', '=', now()->format('Y-m-d'))
@@ -128,6 +129,7 @@ class TrainingController extends Controller
             $userId = Auth::id();
 
             $upcomingSessions = Booking::where('user_id', $userId)
+                ->where('status', 'completed')
                 ->where('date', '<', now()->format('Y-m-d'))
                 ->orWhere(function ($query) {
                     $query->where('date', '=', now()->format('Y-m-d'))
@@ -147,6 +149,25 @@ class TrainingController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to retrieve upcoming sessions.',
                 'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function cancelUpcomingSessions($id)
+    {
+        try {
+            $cancelBooking = Booking::findOrFail($id);
+            $cancelBooking->status = 'canceled';
+            $cancelBooking->update();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Session Canceled Successfully!',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Something went wrong!',
             ], 500);
         }
     }
